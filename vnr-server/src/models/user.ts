@@ -1,9 +1,8 @@
-import mongoose, { type InferSchemaType } from 'mongoose'
 
-const userSchema = new mongoose.Schema({
-    email: { type: String, required: true }, 
-    password: { type: String, required: true }
-})
+export interface User {
+    id: number
+    name: string
+    email: string
+    password: string
+}
 
-export type User = InferSchemaType<typeof userSchema>
-export default mongoose.model('User', userSchema)

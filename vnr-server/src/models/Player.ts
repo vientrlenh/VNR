@@ -1,5 +1,9 @@
-import mongoose from "mongoose";
-
-const playerSchema = new mongoose.Schema({
-    name : { type: String, required: true, trim: true, maxlength: 30, unique: true }
-})
+export interface Player {
+    id: number 
+    gameId: number
+    nickname: string
+    score: number 
+    correctAnswer: number 
+    incorrectAnswer: number 
+    answerTimeSec: number
+}

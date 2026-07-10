@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique 
+  name String? 
+  password String
+  games Game[]
+}
+
+model Game {
+  id Int @id @default(autoincrement())
+  name String @unique 
+  hostId Int
+  host User @relation(fields: [hostId], references: [id])
+  players Player[]
+}
+
+model Player {
+  id Int @id @default(autoincrement())
+  nickname String
+  gameId Int
+  game Game @relation(fields: [gameId], references: [id])
+  score Int 
+  correctAnswer Int @default(0)
+  incorrectAnswer Int @default(0)
+  answerTimeSec Int @default(0)
+  playerAnswer PlayerAnswer[]
+}
+
+model Question {
+  id Int @id @default(autoincrement())
+  title String
+  options Option[]
+  correctAns Int
+  type String 
+  timeLimitSec Int
+}
+
+model Option {
+  id Int @id @default(autoincrement())
+  content String @db.Text
+  questionId Int 
+  question Question @relation(fields: [questionId], references: [id])
+  isCorrect Boolean
+  playerAnswer PlayerAnswer[]
+}
+
+model PlayerAnswer {
+  id Int @id @default(autoincrement())
+  playerId Int 
+  player Player @relation(fields: [playerId], references: [id])
+  optionId Int 
+  option Option @relation(fields: [optionId], references: [id])
+  bonusScore Int
+  remainingTime Int
+  answerAt DateTime
+}
