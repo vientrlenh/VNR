@@ -1,8 +1,9 @@
-import mongoose from 'mongoose'
+import mongoose, { type InferSchemaType } from 'mongoose'
 
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true }, 
     password: { type: String, required: true }
 })
 
-module.exports = mongoose.model('User', userSchema)
+export type User = InferSchemaType<typeof userSchema>
+export default mongoose.model('User', userSchema)
