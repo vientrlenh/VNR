@@ -1,4 +1,5 @@
 import express, { type Request, type Response} from 'express'
+import authRoutes from './routes/authRoutes.js'
 
 
 const app = express()
@@ -11,6 +12,8 @@ app.get('/', (req: Request, res: Response) => {
         status: 'OK'
     })
 })
+
+app.use('/auth', authRoutes)
 
 app.listen(PORT, () => {
     console.log(`Server started at Port: ${PORT}`)
