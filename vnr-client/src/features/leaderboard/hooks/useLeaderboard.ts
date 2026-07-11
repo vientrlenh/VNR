@@ -1,35 +1,69 @@
 import { useEffect, useState } from 'react'
 import type { Player } from '../../../types'
 import { socket } from '../../../api/socket'
+import { getCurrentGame } from '../../../api/game'
 
 const PAGE_SIZE = 10
 const ROTATE_INTERVAL_MS = 6000
 
+type Status = 'loading' | 'ready' | 'error'
+
+interface JoinAck {
+  ok: boolean
+  error?: string
+}
+
 export function useLeaderboard() {
   const [players, setPlayers] = useState<Player[]>([])
-  const [connected, setConnected] = useState(false)
+  const [status, setStatus] = useState<Status>('loading')
+  const [errorMessage, setErrorMessage] = useState('')
   const [page, setPage] = useState(0)
 
   useEffect(() => {
+    let cancelled = false
+
     function handleUpdate(data: Player[]) {
       setPlayers([...data].sort((a, b) => b.score - a.score))
     }
-    function handleConnect() {
-      setConnected(true)
-    }
-    function handleDisconnect() {
-      setConnected(false)
+    socket.on('leaderboard:update', handleUpdate)
+
+    async function connectAndJoin() {
+      let gameId: number
+      try {
+        const { data } = await getCurrentGame()
+        gameId = data.gameId
+      } catch {
+        if (!cancelled) {
+          setStatus('error')
+          setErrorMessage('Không thể lấy thông tin game. Vui lòng thử lại.')
+        }
+        return
+      }
+
+      function joinGame() {
+        socket.emit('game:join', { gameId }, (ack: JoinAck) => {
+          if (cancelled) return
+          if (ack.ok) {
+            setStatus('ready')
+          } else {
+            setStatus('error')
+            setErrorMessage(ack.error ?? 'Không thể tham gia game')
+          }
+        })
+      }
+
+      if (socket.connected) {
+        joinGame()
+      } else {
+        socket.once('connect', joinGame)
+        socket.connect()
+      }
     }
 
-    socket.on('connect', handleConnect)
-    socket.on('disconnect', handleDisconnect)
-    // TODO: xác nhận đúng tên event khi backend sẵn sàng
-    socket.on('leaderboard:update', handleUpdate)
-    socket.connect()
+    connectAndJoin()
 
     return () => {
-      socket.off('connect', handleConnect)
-      socket.off('disconnect', handleDisconnect)
+      cancelled = true
       socket.off('leaderboard:update', handleUpdate)
       socket.disconnect()
     }
@@ -51,7 +85,8 @@ export function useLeaderboard() {
 
   return {
     players: pagedPlayers,
-    loading: !connected,
+    loading: status === 'loading',
+    error: status === 'error' ? errorMessage : null,
     page: safePage,
     totalPages,
   }

@@ -1,21 +1,37 @@
 import { useState, type SubmitEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { joinGame, savePlayerSession } from '../api/player'
 import './HomePage.css'
-
-const NICKNAME_KEY = 'vnr_player_nickname'
 
 export function HomePage() {
     const navigate = useNavigate()
     const [nickname, setNickname] = useState('')
+    const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
 
-    function handleSubmit(e: SubmitEvent) {
+    async function handleSubmit(e: SubmitEvent) {
         e.preventDefault()
         const trimmed = nickname.trim()
         if (!trimmed) return
 
-        // TODO: gọi API kiểm tra/đăng ký nickname với server trước khi vào game
-        sessionStorage.setItem(NICKNAME_KEY, trimmed)
-        navigate('/game')
+        setError('')
+        setLoading(true)
+        try {
+            const { data } = await joinGame(trimmed)
+            savePlayerSession(data)
+            navigate('/game')
+        } catch (err) {
+            if (axios.isAxiosError(err) && err.response?.status === 409) {
+                setError('Tên đã được sử dụng, hãy chọn tên khác.')
+            } else if (axios.isAxiosError(err) && err.response?.status === 400) {
+                setError('Chưa có game nào được mở.')
+            } else {
+                setError('Không thể tham gia lúc này. Vui lòng thử lại.')
+            }
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -43,8 +59,10 @@ export function HomePage() {
                         />
                     </label>
 
-                    <button type="submit" className="home-submit">
-                        Bắt đầu
+                    {error && <p className="home-error">{error}</p>}
+
+                    <button type="submit" className="home-submit" disabled={loading}>
+                        {loading ? 'Đang tham gia...' : 'Bắt đầu'}
                     </button>
                 </form>
             </section>

@@ -8,7 +8,38 @@ export interface LoginResponse {
 }
 
 export interface Player {
-  id: string
+  id: number
   nickname: string
   score: number
+}
+
+export interface JoinGameResponse {
+  playerId: number
+  gameId: number
+  nickname: string
+}
+
+export interface CurrentGameResponse {
+  gameId: number
+  name: string
+}
+
+export interface QuestionOption {
+  id: number
+  content: string
+}
+
+export interface Question {
+  id: number
+  title: string
+  type: string
+  timeLimitSec: number
+  options: QuestionOption[]
+}
+
+export interface AnswerResult {
+  correct: boolean
+  correctOptionId?: number
+  bonusScore: number
+  totalScore: number
 }

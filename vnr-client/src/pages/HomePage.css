@@ -80,6 +80,15 @@
   box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
+.home-error {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--warn-bg);
+  color: var(--warn);
+  font-size: 14px;
+}
+
 .home-submit {
   padding: 14px;
   border: none;
@@ -92,6 +101,11 @@
   transition: filter 0.15s ease;
 }
 
-.home-submit:hover {
+.home-submit:hover:not(:disabled) {
   filter: brightness(1.08);
+}
+
+.home-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

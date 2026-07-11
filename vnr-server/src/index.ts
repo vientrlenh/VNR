@@ -1,6 +1,8 @@
 import 'dotenv/config'
 import express, { type Request, type Response} from 'express'
 import authRoutes from './routes/authRoutes.js'
+import playerRoutes from './routes/playerRoutes.js'
+import gameRoutes from './routes/gameRoutes.js'
 import cors from 'cors'
 import { createServer } from 'http'
 import { initSocket } from './lib/socket.js'
@@ -21,6 +23,8 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.use('/auth', authRoutes)
+app.use('/players', playerRoutes)
+app.use('/games', gameRoutes)
 
 httpServer.listen(PORT, () => {
     console.log(`Server started at Port: ${PORT}`)

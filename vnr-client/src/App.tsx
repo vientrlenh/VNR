@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import LoginPage from './pages/LoginPage'
 import { HomePage } from './pages/HomePage'
 import { HostPage } from './pages/HostPage'
+import { GamePage } from './pages/GamePage'
 import { getAuthToken } from './api/client'
 
 function RequireAuth({ children }: { children: ReactElement }) {
@@ -15,6 +16,7 @@ export default function App() {
       <Routes>
         <Route index path="/" element={<HomePage/>}/>
         <Route path="login" element={<LoginPage/>}/>
+        <Route path="game" element={<GamePage/>}/>
         <Route
           path="host"
           element={

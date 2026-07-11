@@ -5,7 +5,7 @@ import './HostPage.css'
 
 export function HostPage() {
     const navigate = useNavigate()
-    const { players, loading, page, totalPages } = useLeaderboard()
+    const { players, loading, error, page, totalPages } = useLeaderboard()
 
     function handleLogout() {
         clearAuthToken()
@@ -21,7 +21,9 @@ export function HostPage() {
                 </button>
             </header>
 
-            {loading ? (
+            {error ? (
+                <p className="host-status host-status-error">{error}</p>
+            ) : loading ? (
                 <p className="host-status">Đang kết nối...</p>
             ) : players.length === 0 ? (
                 <p className="host-status">Chưa có người chơi nào.</p>
