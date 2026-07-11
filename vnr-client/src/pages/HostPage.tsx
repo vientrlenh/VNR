@@ -5,7 +5,7 @@ import './HostPage.css'
 
 export function HostPage() {
     const navigate = useNavigate()
-    const { players, loading } = useLeaderboard()
+    const { players, loading, page, totalPages } = useLeaderboard()
 
     function handleLogout() {
         clearAuthToken()
@@ -22,19 +22,38 @@ export function HostPage() {
             </header>
 
             {loading ? (
-                <p className="host-status">Đang tải...</p>
+                <p className="host-status">Đang kết nối...</p>
             ) : players.length === 0 ? (
                 <p className="host-status">Chưa có người chơi nào.</p>
             ) : (
-                <ol className="host-leaderboard">
-                    {players.map((player, index) => (
-                        <li key={player.id} className="host-row">
-                            <span className="host-rank">{index + 1}</span>
-                            <span className="host-nickname">{player.nickname}</span>
-                            <span className="host-score">{player.score}</span>
-                        </li>
-                    ))}
-                </ol>
+                <>
+                    <ol className="host-leaderboard" start={page * 10 + 1}>
+                        {players.map((player, index) => {
+                            const rank = page * 10 + index + 1
+                            return (
+                                <li
+                                    key={player.id}
+                                    className={`host-row${rank === 1 ? ' host-row-top' : ''}`}
+                                >
+                                    <span className="host-rank">{rank}</span>
+                                    <span className="host-nickname">{player.nickname}</span>
+                                    <span className="host-score">{player.score}</span>
+                                </li>
+                            )
+                        })}
+                    </ol>
+
+                    {totalPages > 1 && (
+                        <div className="host-dots">
+                            {Array.from({ length: totalPages }).map((_, i) => (
+                                <span
+                                    key={i}
+                                    className={`host-dot${i === page ? ' active' : ''}`}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </>
             )}
         </main>
     )

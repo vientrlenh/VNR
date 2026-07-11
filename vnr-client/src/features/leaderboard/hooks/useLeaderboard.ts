@@ -1,38 +1,58 @@
 import { useEffect, useState } from 'react'
 import type { Player } from '../../../types'
-import { getLeaderboard } from '../../../api/leaderboard'
+import { socket } from '../../../api/socket'
 
-const POLL_INTERVAL_MS = 3000
+const PAGE_SIZE = 10
+const ROTATE_INTERVAL_MS = 6000
 
 export function useLeaderboard() {
   const [players, setPlayers] = useState<Player[]>([])
-  const [loading, setLoading] = useState(true)
+  const [connected, setConnected] = useState(false)
+  const [page, setPage] = useState(0)
 
   useEffect(() => {
-    let cancelled = false
-
-    async function fetchLeaderboard() {
-      try {
-        const data = await getLeaderboard()
-        if (!cancelled) setPlayers(data)
-      } catch {
-        // TODO: hiển thị trạng thái mất kết nối thay vì im lặng bỏ qua lỗi
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
+    function handleUpdate(data: Player[]) {
+      setPlayers([...data].sort((a, b) => b.score - a.score))
+    }
+    function handleConnect() {
+      setConnected(true)
+    }
+    function handleDisconnect() {
+      setConnected(false)
     }
 
-    fetchLeaderboard()
-    // TODO: thay polling bằng WebSocket/SSE khi backend hỗ trợ để cập nhật tức thời hơn
-    const interval = setInterval(fetchLeaderboard, POLL_INTERVAL_MS)
+    socket.on('connect', handleConnect)
+    socket.on('disconnect', handleDisconnect)
+    // TODO: xác nhận đúng tên event khi backend sẵn sàng
+    socket.on('leaderboard:update', handleUpdate)
+    socket.connect()
 
     return () => {
-      cancelled = true
-      clearInterval(interval)
+      socket.off('connect', handleConnect)
+      socket.off('disconnect', handleDisconnect)
+      socket.off('leaderboard:update', handleUpdate)
+      socket.disconnect()
     }
   }, [])
 
-  const ranked = [...players].sort((a, b) => b.score - a.score)
+  const totalPages = Math.max(1, Math.ceil(players.length / PAGE_SIZE))
+  // Nếu danh sách rút ngắn khiến trang đang lưu vượt quá tổng số trang mới, kẹp lại khi render thay vì qua effect
+  const safePage = page % totalPages
 
-  return { players: ranked, loading }
+  useEffect(() => {
+    if (totalPages <= 1) return
+    const interval = setInterval(() => {
+      setPage((p) => (p + 1) % totalPages)
+    }, ROTATE_INTERVAL_MS)
+    return () => clearInterval(interval)
+  }, [totalPages])
+
+  const pagedPlayers = players.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE)
+
+  return {
+    players: pagedPlayers,
+    loading: !connected,
+    page: safePage,
+    totalPages,
+  }
 }

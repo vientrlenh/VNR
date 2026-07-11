@@ -63,9 +63,10 @@
   border-radius: 12px;
   background: var(--bg);
   font-size: 22px;
+  animation: host-row-enter 0.35s ease;
 }
 
-.host-row:first-child {
+.host-row-top {
   border-color: var(--gold-border);
   background: var(--gold-bg);
 }
@@ -85,4 +86,34 @@
 .host-score {
   font-weight: 700;
   color: #8a6d00;
+}
+
+@keyframes host-row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.host-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.host-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.host-dot.active {
+  background: var(--accent);
+  transform: scale(1.2);
 }

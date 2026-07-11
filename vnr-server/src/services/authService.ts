@@ -1,3 +1,4 @@
+import { signToken } from "../lib/jwt.js";
 import { getUserByEmail } from "../repositories/userRepository.js";
 
 export async function login(email: string, password: string) {
@@ -5,7 +6,6 @@ export async function login(email: string, password: string) {
     if (!user || user.password !== password) {
         return null;
     }
-
-    const { password: _password, ...safeUser } = user;
-    return safeUser;
+    var token = signToken(user.id, user.email)
+    return token;
 }

@@ -10,12 +10,12 @@ router.post("/login", async (req: Request, res: Response) => {
         return res.status(400).send({ message: "Email và mật khẩu là bắt buộc" });
     }
 
-    const user = await login(email, password);
-    if (!user) {
+    const token = await login(email, password);
+    if (token === "") {
         return res.status(401).send({ message: "Email hoặc mật khẩu không đúng" });
     }
 
-    res.send({ user });
+    res.send({ token: token });
 });
 
 export default router;
