@@ -37,7 +37,7 @@ export async function submitAnswer({ playerId, questionId, optionId, timeLimitSe
         ? Math.round(BASE_SCORE + SPEED_BONUS * (remainingTime / timeLimitSec))
         : 0
 
-    await createPlayerAnswer({ playerId, optionId, bonusScore, remainingTime })
+    await createPlayerAnswer({ playerId, questionId, optionId, bonusScore, remainingTime })
     const player = await incrementPlayerScore(playerId, bonusScore, correct)
 
     const correctOption = question.options.find((o) => o.isCorrect)
@@ -46,6 +46,26 @@ export async function submitAnswer({ playerId, questionId, optionId, timeLimitSe
         correct,
         correctOptionId: correctOption?.id,
         bonusScore,
+        totalScore: player.score,
+    }
+}
+
+interface RecordMissedAnswerParams {
+    playerId: number
+    questionId: number
+}
+
+export async function recordMissedAnswer({ playerId, questionId }: RecordMissedAnswerParams) {
+    const question = await getQuestionById(questionId)
+    const correctOption = question?.options.find((o) => o.isCorrect)
+
+    await createPlayerAnswer({ playerId, questionId, bonusScore: 0, remainingTime: 0 })
+    const player = await incrementPlayerScore(playerId, 0, false)
+
+    return {
+        correct: false,
+        correctOptionId: correctOption?.id,
+        bonusScore: 0,
         totalScore: player.score,
     }
 }

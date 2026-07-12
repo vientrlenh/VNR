@@ -3,7 +3,7 @@ import type { Server as HttpServer } from 'http'
 import { verifyToken, type JwtPayload } from './jwt.js'
 import { getGameById } from '../repositories/gameRepository.js'
 import { getPlayerById, getPlayersByGame } from '../repositories/playerRepository.js'
-import { getNextQuestionForPlayer, submitAnswer } from '../services/quizService.js'
+import { getNextQuestionForPlayer, recordMissedAnswer, submitAnswer } from '../services/quizService.js'
 
 interface SocketData {
     user?: JwtPayload
@@ -13,6 +13,7 @@ interface SocketData {
     currentQuestionId?: number | undefined
     currentTimeLimitSec?: number
     questionSentAt?: number
+    answerTimeout?: NodeJS.Timeout
 }
 
 interface JoinAck {
@@ -67,6 +68,12 @@ type AppServer = Server<ClientToServerEvents, ServerToClientEvents, Record<strin
 type AppSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>
 
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5174'
+// Thời gian giữ màn hình kết quả (đúng/sai) trước khi chuyển câu tiếp theo, để người chơi kịp thấy hiệu ứng
+const RESULT_DISPLAY_MS = 1500
+
+function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 export function gameRoom(gameId: number) {
     return `game:${gameId}`
@@ -180,6 +187,7 @@ function initPlayerNamespace(io: AppServer) {
             const questionSentAt = socket.data.questionSentAt!
             // Chặn nộp trùng cho cùng một câu trong lúc đang xử lý bất đồng bộ ở dưới
             socket.data.currentQuestionId = undefined
+            clearTimeout(socket.data.answerTimeout)
 
             const result = await submitAnswer({ playerId, questionId, optionId, timeLimitSec, questionSentAt })
             if (!result) {
@@ -188,10 +196,12 @@ function initPlayerNamespace(io: AppServer) {
 
             socket.emit('answer:result', result)
             await broadcastLeaderboard(gameId)
+            await delay(RESULT_DISPLAY_MS)
             await sendNextQuestion(socket, playerId)
         })
 
         socket.on('disconnect', () => {
+            clearTimeout(socket.data.answerTimeout)
             console.log(`Player disconnected: ${socket.data.nickname}`)
         })
     })
@@ -216,6 +226,25 @@ async function sendNextQuestion(socket: AppSocket, playerId: number) {
         timeLimitSec: question.timeLimitSec,
         options: question.options.map((o) => ({ id: o.id, content: o.content })),
     })
+
+    const gameId = socket.data.gameId!
+    // Cho thêm 1s dung sai mạng, khớp với cách submitAnswer chấp nhận câu trả lời tới trễ chút
+    socket.data.answerTimeout = setTimeout(() => {
+        void handleTimeout(socket, playerId, question.id, gameId)
+    }, question.timeLimitSec * 1000 + 1000)
+}
+
+async function handleTimeout(socket: AppSocket, playerId: number, questionId: number, gameId: number) {
+    if (socket.data.currentQuestionId !== questionId) {
+        return
+    }
+    socket.data.currentQuestionId = undefined
+
+    const result = await recordMissedAnswer({ playerId, questionId })
+    socket.emit('answer:result', result)
+    await broadcastLeaderboard(gameId)
+    await delay(RESULT_DISPLAY_MS)
+    await sendNextQuestion(socket, playerId)
 }
 
 async function broadcastLeaderboard(gameId: number) {

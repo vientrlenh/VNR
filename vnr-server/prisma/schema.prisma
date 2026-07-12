@@ -45,8 +45,9 @@ model Question {
   title String
   options Option[]
   correctAns Int
-  type String 
+  type String
   timeLimitSec Int
+  playerAnswer PlayerAnswer[]
 }
 
 model Option {
@@ -60,10 +61,12 @@ model Option {
 
 model PlayerAnswer {
   id Int @id @default(autoincrement())
-  playerId Int 
+  playerId Int
   player Player @relation(fields: [playerId], references: [id])
-  optionId Int 
-  option Option @relation(fields: [optionId], references: [id])
+  questionId Int
+  question Question @relation(fields: [questionId], references: [id])
+  optionId Int?
+  option Option? @relation(fields: [optionId], references: [id])
   bonusScore Int
   remainingTime Int
   answerAt DateTime
