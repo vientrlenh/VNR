@@ -68,6 +68,7 @@ export function useQuiz() {
     question,
     result,
     submitAnswer,
+    ranked,
     myScore: me?.score ?? result?.totalScore ?? 0,
     myRank: myIndex >= 0 ? myIndex + 1 : null,
     totalPlayers: ranked.length,

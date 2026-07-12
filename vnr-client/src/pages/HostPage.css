@@ -3,7 +3,10 @@
   width: 100%;
   padding: 48px;
   box-sizing: border-box;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at 12% 0%, var(--accent-bg), transparent 55%),
+    radial-gradient(circle at 88% 100%, var(--gold-bg), transparent 55%),
+    var(--bg);
 }
 
 .host-header {
@@ -25,10 +28,11 @@
   padding: 10px 18px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: transparent;
+  background: var(--bg);
   color: var(--text);
   font-size: 14px;
   cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
 }
 
 .host-logout:hover {
@@ -66,19 +70,47 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--bg);
+  box-shadow: var(--shadow);
   font-size: 22px;
   animation: host-row-enter 0.35s ease;
+  transition: transform 0.2s ease;
 }
 
-.host-row-top {
+.host-row:hover {
+  transform: translateY(-2px);
+}
+
+.host-row-gold {
   border-color: var(--gold-border);
-  background: var(--gold-bg);
+  background: linear-gradient(90deg, var(--gold-bg), var(--bg) 70%);
+}
+
+.host-row-silver {
+  border-color: rgba(203, 213, 225, 0.55);
+  background: linear-gradient(90deg, rgba(203, 213, 225, 0.16), var(--bg) 70%);
+}
+
+.host-row-bronze {
+  border-color: rgba(205, 127, 50, 0.5);
+  background: linear-gradient(90deg, rgba(205, 127, 50, 0.16), var(--bg) 70%);
 }
 
 .host-rank {
   text-align: center;
   font-weight: 700;
   color: var(--accent);
+}
+
+.host-row-gold .host-rank {
+  color: var(--gold);
+}
+
+.host-row-silver .host-rank {
+  color: #cbd5e1;
+}
+
+.host-row-bronze .host-rank {
+  color: #cd7f32;
 }
 
 .host-nickname {
@@ -103,18 +135,51 @@
   }
 }
 
+.host-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  max-width: 720px;
+}
+
+.host-nav-arrow {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.host-nav-arrow:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .host-dots {
   display: flex;
   gap: 8px;
-  margin-top: 24px;
 }
 
 .host-dot {
   width: 10px;
   height: 10px;
+  padding: 0;
+  border: none;
   border-radius: 50%;
   background: var(--border);
+  cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.host-dot:hover {
+  background: var(--accent-border);
 }
 
 .host-dot.active {

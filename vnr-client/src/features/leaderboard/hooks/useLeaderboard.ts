@@ -4,7 +4,6 @@ import { socket } from '../../../api/socket'
 import { getCurrentGame } from '../../../api/game'
 
 const PAGE_SIZE = 10
-const ROTATE_INTERVAL_MS = 6000
 
 type Status = 'loading' | 'ready' | 'error'
 
@@ -73,15 +72,11 @@ export function useLeaderboard() {
   // Nếu danh sách rút ngắn khiến trang đang lưu vượt quá tổng số trang mới, kẹp lại khi render thay vì qua effect
   const safePage = page % totalPages
 
-  useEffect(() => {
-    if (totalPages <= 1) return
-    const interval = setInterval(() => {
-      setPage((p) => (p + 1) % totalPages)
-    }, ROTATE_INTERVAL_MS)
-    return () => clearInterval(interval)
-  }, [totalPages])
-
   const pagedPlayers = players.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE)
+
+  function goToPage(index: number) {
+    setPage(index % totalPages)
+  }
 
   return {
     players: pagedPlayers,
@@ -89,5 +84,6 @@ export function useLeaderboard() {
     error: status === 'error' ? errorMessage : null,
     page: safePage,
     totalPages,
+    goToPage,
   }
 }
