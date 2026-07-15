@@ -31,6 +31,17 @@ const questions: SeedQuestion[] = [
         ],
     },
     {
+        title: 'Ai được bầu làm Tổng Bí thư tại Đại hội VIII?', 
+        type: 'SINGLE', 
+        timeLimitSec: 15, 
+        options: [
+            { content: 'Nguyễn Văn Linh', isCorrect: false }, 
+            { content: 'Lê Khả Phiêu', isCorrect: false }, 
+            { content: 'Đỗ Mười', isCorrect: true }, 
+            { content: 'Nông Đức Mạnh', isCorrect: false }
+        ]
+    }, 
+    {
         title: 'Đại hội VIII nhận định đất nước đã ra khỏi khủng hoảng kinh tế - xã hội và chuyển sang thời kỳ nào?',
         type: 'SINGLE',
         timeLimitSec: 20,
@@ -51,6 +62,17 @@ const questions: SeedQuestion[] = [
             { content: 'Gia nhập Tổ chức Thương mại Thế giới (WTO)', isCorrect: false },
             { content: 'Hoàn thành công nghiệp hóa nông nghiệp, nông thôn', isCorrect: false },
         ],
+    },
+    {
+        title: 'Đại hội VIII đề ra bao nhiêu quan điểm chỉ đạo công nghiệp hóa, hiện đại hóa?', 
+        type: 'SINGLE', 
+        timeLimitSec: 15, 
+        options: [
+            { content: '4', isCorrect: false }, 
+            { content: '5', isCorrect: false }, 
+            { content: '6', isCorrect: true }, 
+            { content: '8', isCorrect: false }
+        ]
     },
     {
         title: 'Đại hội VIII xác định công nghiệp hóa, hiện đại hóa là sự nghiệp của ai?',
@@ -74,6 +96,17 @@ const questions: SeedQuestion[] = [
             { content: 'Lao động giá rẻ', isCorrect: false },
         ],
     },
+    {
+        title: 'Đặc trưng về mục tiêu xây dựng CNXH mà Đại hội VII bổ sung là:', 
+        type: 'SINGLE', 
+        timeLimitSec: 15, 
+        options: [
+            { content: 'Dân giàu, nước mạnh, dân chủ, công bằng, văn minh', isCorrect: false }, 
+            { content: 'Dân giàu, nước mạnh, xã hội công bằng, văn minh', isCorrect: true }, 
+            { content: 'Độc lập - tự do - hạnh phúc', isCorrect: false }, 
+            { content: 'Dân chủ, công bằng, văn minh, hiện đại', isCorrect: false }
+        ]
+    },
 
     // Phần b: Đại hội IX (2001) — tiếp tục thực hiện CNH, HĐH đất nước
     {
@@ -86,6 +119,17 @@ const questions: SeedQuestion[] = [
             { content: '2006', isCorrect: false },
             { content: '2011', isCorrect: false },
         ],
+    },
+    {
+        title: 'Ai được bầu làm Tổng Bí thư tại Đại hội IX?', 
+        type: 'SINGLE', 
+        timeLimitSec: 15, 
+        options: [
+            { content: 'Đỗ Mười', isCorrect: false }, 
+            { content: 'Lê Khả Phiêu', isCorrect: false }, 
+            { content: 'Nguyễn Phú Trọng', isCorrect: false }, 
+            { content: 'Nông Đức Mạnh', isCorrect: true }
+        ]
     },
     {
         title: 'Đại hội IX xác định mô hình kinh tế tổng quát trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam là gì?',
@@ -120,6 +164,28 @@ const questions: SeedQuestion[] = [
             { content: '2005 - 2020', isCorrect: false },
         ],
     },
+    {
+        title: 'Đại hội IX đã có những đóng góp lý luận nào sau đây?', 
+        type: 'SINGLE', 
+        timeLimitSec: 15, 
+        options: [
+            { content: 'Đưa ra con đường hoàn chỉnh về tư tưởng Hồ Chí Minh', isCorrect: false }, 
+            { content: 'Làm rõ con đường quá độ lên CNXH "bỏ qua chế độ tư bản chủ nghĩa"', isCorrect: false}, 
+            { content: 'Xác định kinh tế thị trường định hướng XHCN là mô hình tổng quát', isCorrect: false }, 
+            { content: 'Cả 3 câu trên đều đúng', isCorrect: true }
+        ]
+    }, 
+    {
+        title: 'Nội dung "dấu ấn" với từng đại hội:', 
+        type: 'SINGLE', 
+        timeLimitSec: 15, 
+        options: [
+            { content: 'VIII - định hình mô hình kinh tế; IX - khởi động công nghiệp hóa, hiện đại hóa', isCorrect: false}, 
+            { content: 'VIII - khởi động, đẩy mạnh CNH, HĐH (6 quan điểm); IX - định hình mô hình kinh tế thị trường định hướng XHCN', isCorrect: true }, 
+            { content: 'Cả hai đại hội đều xác lập mô hình kinh tế thị trường định hướng XHCN', isCorrect: false }, 
+            { content: 'Cả hai đại hội đều do đồng chí Đỗ Mười làm Tổng Bí thư', isCorrect: false }
+        ]
+    }
 ]
 
 async function main() {
